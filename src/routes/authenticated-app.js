@@ -6,14 +6,20 @@ import {
   Redirect,
 } from 'react-router-dom';
 import { Container, Menu } from 'semantic-ui-react';
+import history from './history';
+
 import { useAuth } from '../context/auth-context';
 
 import Novels from '../screens/Novels';
+import CreateChapter from '../screens/CreateChapter';
+import EditChapter from '../screens/EditChapter';
+import CreateNovel from '../screens/CreateNovel';
+import EditNovel from '../screens/EditNovel';
 
 function AuthenticatedApp() {
   const { logout } = useAuth();
   return (
-    <Router>
+    <Router history={history}>
       <Menu fixed="top" inverted>
         <Container>
           <Menu.Item header>
@@ -21,15 +27,19 @@ function AuthenticatedApp() {
           </Menu.Item>
           <Menu.Menu position="right">
             <Menu.Item>
-              <Link to="/novels">Novels</Link>
+              <Link to="/">Novels</Link>
             </Menu.Item>
             <Menu.Item onClick={logout}>Logout</Menu.Item>
           </Menu.Menu>
         </Container>
       </Menu>
-      <Container style={{ marginTop: '7em' }}>
+      <Container style={{ marginTop: '4em' }}>
         <Route path="/" exact component={Novels} />
-        <Route render={() => <Redirect to="/" />} />
+        <Route path="/new-chapter/" exact component={CreateChapter} />
+        <Route path="/edit-chapter/:id" exact component={EditChapter} />
+        <Route path="/new-novel/" exact component={CreateNovel} />
+        <Route path="/edit-novel/:id" exact component={EditNovel} />
+        {/* <Route component={() => <Redirect to="/" />} /> */}
       </Container>
     </Router>
   );

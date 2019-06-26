@@ -1,5 +1,4 @@
 import React, { useState, createContext, useContext } from 'react';
-
 const AuthContext = createContext();
 
 function AuthProvider(props) {
@@ -16,7 +15,7 @@ function AuthProvider(props) {
 
   return (
     <AuthContext.Provider
-      value={{ user, login, logout, register }}
+      value={{ user, login, logout, register, setUser }}
       {...props}
     />
   );

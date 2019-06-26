@@ -1,32 +1,33 @@
 import React from 'react';
 import { Container, Header, Table, Icon, Button } from 'semantic-ui-react';
 import { useQuery } from 'react-apollo-hooks';
+import { Link } from 'react-router-dom';
 import { NOVELS_QUERY } from '../graphql/Query';
+import moment from 'moment';
+import { get } from 'lodash';
 
 const Novels = () => {
   const {
     data: { novels },
     error,
-    loading,
   } = useQuery(NOVELS_QUERY);
-  console.log('novels', novels);
-  console.log('error', error);
-  console.log('loading', loading);
   return (
     <React.Fragment>
       <Container>
         <Header as="h1">Lista de Novels</Header>
         <Button color="facebook">
-          <Icon name="plus" /> Create Novel
+          <Icon name="plus" /> Criar Novel
         </Button>
       </Container>
-
+      <Container>
+        {error && <p style={{ color: 'red' }}>Error ao carregar novels </p>}
+      </Container>
       <Container style={{ marginTop: 20 }}>
-        <Table celled padded>
+        <Table striped>
           <Table.Header>
             <Table.Row>
               <Table.HeaderCell>Name</Table.HeaderCell>
-              <Table.HeaderCell>Last Chapter</Table.HeaderCell>
+              <Table.HeaderCell>Last Chapter Info</Table.HeaderCell>
               <Table.HeaderCell>Novel</Table.HeaderCell>
               <Table.HeaderCell>Chapter</Table.HeaderCell>
             </Table.Row>
@@ -34,12 +35,15 @@ const Novels = () => {
 
           <Table.Body>
             {novels &&
-              novels.map(({ id, name, lastChapter: { number, createdAt } }) => {
+              novels.map(({ id, name, lastChapter }) => {
+                const number = get(lastChapter, 'number', '');
+                const date = get(lastChapter, 'createdAt', false);
                 return (
                   <Table.Row key={id}>
-                    <Table.Cell singleLine>{name}</Table.Cell>
+                    <Table.Cell singleLine> {name}</Table.Cell>
                     <Table.Cell>
-                      {number} - {createdAt}
+                      {number} -{' '}
+                      {date && moment(parseInt(date, 10)).format('DD/MM/YYYY')}
                     </Table.Cell>
                     <Table.Cell>
                       <Icon link name="edit" size="big" />
@@ -51,7 +55,14 @@ const Novels = () => {
                         size="big"
                         link
                       />
-                      <Icon name="add circle" size="big" link />
+                      <Link
+                        to={{
+                          pathname: `/new-chapter/`,
+                          state: { id },
+                        }}
+                      >
+                        <Icon name="add circle" size="big" link />
+                      </Link>
                     </Table.Cell>
                   </Table.Row>
                 );

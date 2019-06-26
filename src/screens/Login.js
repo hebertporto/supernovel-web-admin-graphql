@@ -9,9 +9,32 @@ import {
 } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/auth-context';
+import { useFormState } from 'react-use-form-state';
+import { LOGIN_MUTATION } from '../graphql/Mutation';
+import { useMutation } from 'react-apollo-hooks';
 
 const LoginForm = () => {
-  const { login } = useAuth();
+  // TODO: handle loading and error
+  const { setUser } = useAuth();
+  const [formState, { email, password }] = useFormState({
+    email: 'hebert@it.com',
+    password: '545454',
+  });
+
+  const onSubmit = useMutation(LOGIN_MUTATION, {
+    update: (proxy, mutationResult) => {
+      const { user, token } = mutationResult.data.login;
+      setUser({
+        name: user.name,
+        email: user.email,
+        token: token,
+      });
+    },
+    variables: {
+      email: formState.values.email,
+      password: formState.values.password,
+    },
+  });
   return (
     <Grid textAlign="center" style={{ height: '60vh' }} verticalAlign="middle">
       <Grid.Column style={{ maxWidth: 450 }}>
@@ -20,21 +43,22 @@ const LoginForm = () => {
         </Header>
         <Form size="large">
           <Segment stacked>
-            <Form.Input
-              fluid
-              icon="user"
-              iconPosition="left"
-              placeholder="E-mail address"
+            <input
+              name="email"
+              placeholder="email@example.com"
+              {...email('email')}
+              required
+              style={{ marginBottom: 20 }}
             />
-            <Form.Input
-              fluid
-              icon="lock"
-              iconPosition="left"
-              placeholder="Password"
+            <input
+              name="password"
               type="password"
+              placeholder="password"
+              {...password('password')}
+              style={{ marginBottom: 20 }}
             />
 
-            <Button color="teal" fluid size="large" onClick={login}>
+            <Button color="teal" fluid size="large" onClick={onSubmit}>
               Login
             </Button>
           </Segment>

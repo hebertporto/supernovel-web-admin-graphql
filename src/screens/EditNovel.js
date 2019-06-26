@@ -1,20 +1,11 @@
 import React from 'react';
-import {
-  Button,
-  Form,
-  Grid,
-  Header,
-  Message,
-  Segment,
-} from 'semantic-ui-react';
-import { Link } from 'react-router-dom';
-import { useAuth } from '../context/auth-context';
+import { Button, Form, Grid, Header } from 'semantic-ui-react';
 import { LOGIN_MUTATION } from '../graphql/Mutation';
 import { useMutation } from 'react-apollo-hooks';
 import { useFormState } from 'react-use-form-state';
 
-const CreateNovel = () => {
-  const [formState, { text, textarea, number }] = useFormState({});
+const EditNovel = () => {
+  const [formState, { text, number }] = useFormState({});
 
   const onSubmit = useMutation(LOGIN_MUTATION, {
     update: (proxy, mutationResult) => {},
@@ -27,7 +18,7 @@ const CreateNovel = () => {
     <Grid verticalAlign="middle">
       <Grid.Column width={9}>
         <Header as="h2" color="black" textAlign="center">
-          Nova Novel
+          Edit Novel
         </Header>
         <Form size="big">
           <input
@@ -58,4 +49,4 @@ const CreateNovel = () => {
   );
 };
 
-export default CreateNovel;
+export default EditNovel;
