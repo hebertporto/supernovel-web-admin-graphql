@@ -3,7 +3,7 @@ import { Button, Form } from 'semantic-ui-react';
 import { useFormState } from 'react-use-form-state';
 import { useMutation } from 'react-apollo-hooks';
 import { CREATE_CHAPTER_MUTATION } from '../../graphql/Mutation';
-import { NOVEL_INFO_QUERY } from '../../graphql/Query';
+import { NOVEL_INFO_QUERY, NOVELS_QUERY } from '../../graphql/Query';
 import { get } from 'lodash';
 
 function ChapterForm({ novelId, formData }) {
@@ -37,6 +37,9 @@ function ChapterForm({ novelId, formData }) {
       {
         query: NOVEL_INFO_QUERY,
         variables: { id: novelId },
+      },
+      {
+        query: NOVELS_QUERY,
       },
     ],
   });

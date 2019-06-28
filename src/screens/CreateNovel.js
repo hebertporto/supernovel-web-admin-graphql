@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Form, Grid, Header, Image } from 'semantic-ui-react';
 import { CREATE_NOVEL_MUTATION } from '../graphql/Mutation';
+import { NOVELS_QUERY } from '../graphql/Query';
 import { useMutation } from 'react-apollo-hooks';
 import { useFormState } from 'react-use-form-state';
 import history from '../routes/history';
@@ -35,6 +36,11 @@ const CreateNovel = () => {
       translationTeam: formState.values.translationTeam,
       coverUrl: image,
     },
+    refetchQueries: () => [
+      {
+        query: NOVELS_QUERY,
+      },
+    ],
   });
 
   return (

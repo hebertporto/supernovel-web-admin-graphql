@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Form, Grid, Header, Image } from 'semantic-ui-react';
 import { UPDATE_NOVEL_MUTATION } from '../graphql/Mutation';
-import { NOVEL_FULL_INFO_QUERY } from '../graphql/Query';
+import { NOVEL_FULL_INFO_QUERY, NOVELS_QUERY } from '../graphql/Query';
 import { useMutation, useQuery } from 'react-apollo-hooks';
 import { useFormState } from 'react-use-form-state';
 import history from '../routes/history';
@@ -60,6 +60,11 @@ const EditNovel = (props) => {
       coverUrl: image,
       id,
     },
+    refetchQueries: () => [
+      {
+        query: NOVELS_QUERY,
+      },
+    ],
   });
 
   return (

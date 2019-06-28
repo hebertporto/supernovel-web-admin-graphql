@@ -17,8 +17,8 @@ const LoginForm = () => {
   // TODO: handle loading and error
   const { setUser } = useAuth();
   const [formState, { email, password }] = useFormState({
-    email: 'hebert@it.com',
-    password: '545454',
+    email: '',
+    password: '',
   });
 
   const onSubmit = useMutation(LOGIN_MUTATION, {
