@@ -15,9 +15,11 @@ const Novels = () => {
     <React.Fragment>
       <Container>
         <Header as="h1">Lista de Novels</Header>
-        <Button color="facebook">
-          <Icon name="plus" /> Criar Novel
-        </Button>
+        <Link to="/new-novel/">
+          <Button color="facebook">
+            <Icon name="plus" /> Criar Novel
+          </Button>
+        </Link>
       </Container>
       <Container>
         {error && <p style={{ color: 'red' }}>Error ao carregar novels </p>}
@@ -46,15 +48,24 @@ const Novels = () => {
                       {date && moment(parseInt(date, 10)).format('DD/MM/YYYY')}
                     </Table.Cell>
                     <Table.Cell>
-                      <Icon link name="edit" size="big" />
+                      <Link
+                        to={{
+                          pathname: `/edit-novel/`,
+                          state: { id },
+                        }}
+                      >
+                        <Icon name="edit" size="big" link />
+                      </Link>
                     </Table.Cell>
                     <Table.Cell>
-                      <Icon
-                        onClick={() => console.log('#####')}
-                        name="list ul"
-                        size="big"
-                        link
-                      />
+                      <Link
+                        to={{
+                          pathname: `/chapters/`,
+                          state: { id, name },
+                        }}
+                      >
+                        <Icon name="list ul" size="big" link />
+                      </Link>
                       <Link
                         to={{
                           pathname: `/new-chapter/`,

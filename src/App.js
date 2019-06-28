@@ -8,7 +8,7 @@ import UnauthenticatedApp from './routes/unauthenticated-app';
 
 function App() {
   const user = useUser();
-  return !user ? <AuthenticatedApp /> : <UnauthenticatedApp />;
+  return user ? <AuthenticatedApp /> : <UnauthenticatedApp />;
 }
 
 export { App };

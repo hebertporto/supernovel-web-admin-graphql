@@ -1,115 +1,60 @@
-import React, { useState } from 'react';
-import { Button, Form, Grid, Header, Icon } from 'semantic-ui-react';
-import moment from 'moment';
+import React, { useEffect } from 'react';
+import { Button, Form, Grid, Header } from 'semantic-ui-react';
 import { useFormState } from 'react-use-form-state';
-import {
-  CREATE_CHAPTER_MUTATION,
-  CRAWLER_CHAPTER_MUTATION,
-} from '../graphql/Mutation';
+import { CREATE_CHAPTER_MUTATION } from '../graphql/Mutation';
 import { useQuery, useMutation } from 'react-apollo-hooks';
-import { NOVEL_INFO_QUERY } from '../graphql/Query';
+import { CHAPTER_QUERY } from '../graphql/Query';
+import history from '../routes/history';
 
-const CreateChapter = (props) => {
+function EditChapter(props) {
   const { id } = props.location.state;
-  const { data, error, loading } = useQuery(NOVEL_INFO_QUERY, {
+  const { data } = useQuery(CHAPTER_QUERY, {
     variables: { id },
   });
-  const [showLoadingUrl, setLoadingUrl] = useState(false);
-  const [showSavedChapter, setShowSavedChapter] = useState(false);
-  const [formState, { text, textarea, number }] = useFormState({});
+  const [formState, { text, textarea, number }] = useFormState({
+    number: 0,
+  });
 
-  const onSubmitUrl = useMutation(CRAWLER_CHAPTER_MUTATION, {
-    update: (proxy, mutationResult) => {
+  useEffect(() => {
+    if (data.chapter) {
       const {
         number,
         title,
         translators,
         revisors,
         content,
-      } = mutationResult.data.crawledChapter;
-      formState.setField('number', number.toString());
+        novel,
+      } = data.chapter;
+      formState.setField('number', number);
       formState.setField('title', title);
       formState.setField('translators', translators);
       formState.setField('revisors', revisors);
       formState.setField('content', content);
-      setLoadingUrl(false);
-    },
-    variables: {
-      url: formState.values.url,
-    },
-  });
-
-  const handleUrl = () => {
-    setLoadingUrl(true);
-    onSubmitUrl();
-  };
+      formState.setField('novel', novel.id);
+    }
+  }, [data]); // eslint-disable-line
 
   const onSubmit = useMutation(CREATE_CHAPTER_MUTATION, {
-    update: (proxy, mutationResult) => {
-      formState.setField('number', 0);
-      formState.setField('title', '');
-      formState.setField('translators', '');
-      formState.setField('revisors', '');
-      formState.setField('content', '');
+    update: () => {
+      history.goBack();
     },
     variables: {
-      number: formState.values.number,
+      id: id,
+      number: formState.values.number.toString(),
       title: formState.values.title,
       translators: formState.values.translators,
       revisors: formState.values.revisors,
       content: formState.values.content,
-      novel: id,
+      novel: formState.values.novel,
     },
   });
 
   return (
     <React.Fragment>
-      <Header as="h2" color="black">
-        Crawler
-      </Header>
-      <Form size="big">
-        <Grid>
-          <Grid.Row>
-            <Grid.Column width={9}>
-              <input
-                name="url"
-                placeholder="http://saikai..."
-                {...text('url')}
-              />
-            </Grid.Column>
-          </Grid.Row>
-          <Grid.Row>
-            <Grid.Column width={3}>
-              <Button
-                color="green"
-                fluid
-                size="large"
-                onClick={handleUrl}
-                disabled={showLoadingUrl}
-              >
-                PESQUISAR
-              </Button>
-            </Grid.Column>
-            <Grid.Column width={1}>
-              {showLoadingUrl && <Icon loading name="spinner" />}
-            </Grid.Column>
-          </Grid.Row>
-        </Grid>
-      </Form>
-
       <Grid>
         <Grid.Column>
-          {data.novel && (
-            <div>
-              <Header size="large">{data.novel.name}</Header>
-              <p>
-                Último capítulo: {data.novel.lastChapter.number} |{' '}
-                <Icon name="calendar outline" />
-                {moment(parseInt(data.novel.lastChapter.createdAt, 10)).format(
-                  'DD/MM/YYYY',
-                )}
-              </p>
-            </div>
+          {data.chapter && data.chapter.novel && (
+            <Header size="large">Editar - {data.chapter.novel.name}</Header>
           )}
         </Grid.Column>
       </Grid>
@@ -149,13 +94,13 @@ const CreateChapter = (props) => {
               style={{ marginBottom: 20 }}
             />
             <Button color="facebook" fluid size="large" onClick={onSubmit}>
-              CADASTRAR
+              ATUALIZAR
             </Button>
           </Form>
         </Grid.Column>
       </Grid>
     </React.Fragment>
   );
-};
+}
 
-export default CreateChapter;
+export default EditChapter;

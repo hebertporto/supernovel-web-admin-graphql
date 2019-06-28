@@ -10,27 +10,23 @@ import {
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/auth-context';
 import { useFormState } from 'react-use-form-state';
-import { LOGIN_MUTATION } from '../graphql/Mutation';
+import { REGISTER_USER_MUTATION } from '../graphql/Mutation';
 import { useMutation } from 'react-apollo-hooks';
 
-const LoginForm = () => {
+const Register = () => {
   // TODO: handle loading and error
   const { setUser } = useAuth();
-  const [formState, { email, password }] = useFormState({
-    email: 'hebert@it.com',
-    password: '545454',
+  const [formState, { text, email, password }] = useFormState({
+    email: '',
+    password: '',
   });
 
-  const onSubmit = useMutation(LOGIN_MUTATION, {
+  const onSubmit = useMutation(REGISTER_USER_MUTATION, {
     update: (proxy, mutationResult) => {
-      const { user, token } = mutationResult.data.login;
-      setUser({
-        name: user.name,
-        email: user.email,
-        token: token,
-      });
+      console.log('mutationResult.data', mutationResult);
     },
     variables: {
+      name: formState.values.name,
       email: formState.values.email,
       password: formState.values.password,
     },
@@ -39,10 +35,17 @@ const LoginForm = () => {
     <Grid textAlign="center" style={{ height: '60vh' }} verticalAlign="middle">
       <Grid.Column style={{ maxWidth: 450 }}>
         <Header as="h2" color="black" textAlign="center">
-          Super Novel Admin
+          Super Novel Admin - Register User
         </Header>
         <Form size="large">
           <Segment stacked>
+            <input
+              name="name"
+              placeholder="name"
+              {...text('name')}
+              required
+              style={{ marginBottom: 20 }}
+            />
             <input
               name="email"
               placeholder="email@example.com"
@@ -59,16 +62,16 @@ const LoginForm = () => {
             />
 
             <Button color="teal" fluid size="large" onClick={onSubmit}>
-              Login
+              Criar
             </Button>
           </Segment>
         </Form>
-        {/* <Message>
-          New to us? <Link to="/register">Sign Up</Link>
-        </Message> */}
+        <Message>
+          Log in instead <Link to="/">Log In</Link>
+        </Message>
       </Grid.Column>
     </Grid>
   );
 };
 
-export default LoginForm;
+export default Register;

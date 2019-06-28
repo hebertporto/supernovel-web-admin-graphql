@@ -13,8 +13,17 @@ import 'semantic-ui-css/semantic.min.css';
 
 const client = new ApolloClient({
   cache: new InMemoryCache(),
-  link: new HttpLink({ uri: 'http://localhost:4000/graphql' }),
+  link: new HttpLink({
+    uri: 'https://graphql-supernovel.herokuapp.com/graphql',
+  }),
 });
+
+// const client = new ApolloClient({
+//   cache: new InMemoryCache(),
+//   link: new HttpLink({
+//     uri: 'http://localhost:4000/graphql',
+//   }),
+// });
 
 ReactDOM.render(
   <ApolloProvider client={client}>

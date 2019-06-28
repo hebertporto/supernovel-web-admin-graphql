@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
 import { Container, Menu } from 'semantic-ui-react';
 
 import Login from '../screens/Login';
+import Register from '../screens/Register';
 
 function AuthenticatedApp() {
   return (
@@ -13,8 +14,9 @@ function AuthenticatedApp() {
         </Container>
       </Menu>
       <Container text style={{ marginTop: '7em' }}>
-        <Route path="/login" exact component={Login} />
-        <Route render={() => <Redirect to="/login" />} />
+        <Route path="/" exact component={Login} />
+        <Route path="/register" exact component={Register} />
+        {/* <Route render={() => <Redirect to="/login" />} /> */}
       </Container>
     </Router>
   );

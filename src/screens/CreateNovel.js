@@ -1,58 +1,99 @@
-import React from 'react';
-import {
-  Button,
-  Form,
-  Grid,
-  Header,
-  Message,
-  Segment,
-} from 'semantic-ui-react';
-import { Link } from 'react-router-dom';
-import { useAuth } from '../context/auth-context';
-import { LOGIN_MUTATION } from '../graphql/Mutation';
+import React, { useState } from 'react';
+import { Button, Form, Grid, Header, Image } from 'semantic-ui-react';
+import { CREATE_NOVEL_MUTATION } from '../graphql/Mutation';
 import { useMutation } from 'react-apollo-hooks';
 import { useFormState } from 'react-use-form-state';
+import history from '../routes/history';
 
 const CreateNovel = () => {
-  const [formState, { text, textarea, number }] = useFormState({});
+  const [formState, { text, textarea }] = useFormState({
+    coverUrl: '',
+  });
+  const [image, setImage] = useState(false);
 
-  const onSubmit = useMutation(LOGIN_MUTATION, {
-    update: (proxy, mutationResult) => {},
+  const uploadImmage = async (e) => {
+    const files = e.target.files;
+    const data = new FormData();
+    data.append('file', files[0]);
+    data.append('upload_preset', 'kkzgiffrsupernovel');
+    const res = await fetch(
+      'https://api.cloudinary.com/v1_1/dwvrdf3zg/image/upload',
+      { method: 'POST', body: data },
+    );
+    const fileUploaded = await res.json();
+    setImage(fileUploaded.secure_url);
+  };
+
+  const onSubmit = useMutation(CREATE_NOVEL_MUTATION, {
+    update: () => {
+      history.push('/');
+    },
     variables: {
-      email: formState.values.email,
-      password: formState.values.password,
+      name: formState.values.name,
+      description: formState.values.description,
+      author: formState.values.author,
+      translationTeam: formState.values.translationTeam,
+      coverUrl: image,
     },
   });
+
   return (
-    <Grid verticalAlign="middle">
-      <Grid.Column width={9}>
-        <Header as="h2" color="black" textAlign="center">
-          Nova Novel
+    <Grid columns={2} style={{ marginTop: 50 }}>
+      <Grid.Column>
+        <Header as="h2" color="black">
+          Editar Novel
         </Header>
         <Form size="big">
           <input
-            name="number"
-            placeholder="Number"
-            {...number('number')}
+            name="name"
+            placeholder="Novel's name"
+            {...text('name')}
             required
             style={{ marginBottom: 20 }}
           />
-          <input
-            name="title"
-            placeholder="Title"
-            {...text('title')}
+          <textarea
+            name="description"
+            placeholder="Description"
+            required
+            {...textarea('description')}
             style={{ marginBottom: 20 }}
           />
           <input
-            name="translators"
-            placeholder="Tradutores"
-            {...text('translators')}
+            name="author"
+            placeholder="Author"
+            required
+            {...text('author')}
+            style={{ marginBottom: 20 }}
+          />
+          <input
+            name="translationTeam"
+            required
+            placeholder="Projeto Resposavel "
+            {...text('translationTeam')}
+            style={{ marginBottom: 20 }}
+          />
+          <p>Imagem de Capa: Tamanho da imagem deve ser 600x200</p>
+          <input
+            type="file"
+            id="file"
+            placeholder="novel cover"
+            onChange={uploadImmage}
             style={{ marginBottom: 20 }}
           />
           <Button color="facebook" fluid size="large" onClick={onSubmit}>
             CADASTRAR
           </Button>
         </Form>
+      </Grid.Column>
+      <Grid.Column>
+        {image && (
+          <div>
+            <Header as="h4" color="black">
+              Preview de Capa
+            </Header>
+            <Image src={image} size="large" />
+          </div>
+        )}
       </Grid.Column>
     </Grid>
   );

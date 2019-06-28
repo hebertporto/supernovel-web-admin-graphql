@@ -3,20 +3,22 @@ import { Button, Form } from 'semantic-ui-react';
 import { useFormState } from 'react-use-form-state';
 import { useMutation } from 'react-apollo-hooks';
 import { CREATE_CHAPTER_MUTATION } from '../../graphql/Mutation';
+import { NOVEL_INFO_QUERY } from '../../graphql/Query';
 import { get } from 'lodash';
 
-function ChapterForm({ novelId, formData, handleShowMessage }) {
+function ChapterForm({ novelId, formData }) {
   const [formState, { text, textarea, number }] = useFormState({ number: 0 });
+
   useEffect(() => {
     formState.setField('number', get(formData, 'number', 0) || 0);
     formState.setField('title', get(formData, 'title', ''));
     formState.setField('translators', get(formData, 'translators', ''));
     formState.setField('revisors', get(formData, 'revisors', ''));
     formState.setField('content', get(formData, 'content', ''));
-  }, [formData]);
+  }, [formData]); // eslint-disable-line
+
   const onSubmit = useMutation(CREATE_CHAPTER_MUTATION, {
     update: () => {
-      handleShowMessage();
       formState.setField('number', 0);
       formState.setField('title', '');
       formState.setField('translators', '');
@@ -31,6 +33,12 @@ function ChapterForm({ novelId, formData, handleShowMessage }) {
       content: formState.values.content,
       novel: novelId,
     },
+    refetchQueries: () => [
+      {
+        query: NOVEL_INFO_QUERY,
+        variables: { id: novelId },
+      },
+    ],
   });
 
   return (
