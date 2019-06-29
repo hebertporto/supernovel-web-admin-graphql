@@ -15,7 +15,7 @@ function AuthenticatedApp() {
       </Menu>
       <Container text style={{ marginTop: '7em' }}>
         <Route path="/" exact component={Login} />
-        <Route path="/register" exact component={Register} />
+        {/* <Route path="/register" exact component={Register} /> */}
         {/* <Route render={() => <Redirect to="/login" />} /> */}
       </Container>
     </Router>
