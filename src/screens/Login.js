@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Button,
   Form,
@@ -6,35 +6,43 @@ import {
   Header,
   Message,
   Segment,
+  Dimmer,
+  Loader,
 } from 'semantic-ui-react';
-import { Link } from 'react-router-dom';
 import { useAuth } from '../context/auth-context';
 import { useFormState } from 'react-use-form-state';
 import { LOGIN_MUTATION } from '../graphql/Mutation';
 import { useMutation } from 'react-apollo-hooks';
 
 const LoginForm = () => {
-  // TODO: handle loading and error
+  const [loading, setLoading] = useState(false);
+  const [error, seterror] = useState(false);
   const { setUser } = useAuth();
   const [formState, { email, password }] = useFormState({
-    email: '',
-    password: '',
+    email: 'hebertporto@gmail.com',
+    password: 'Senha0025',
   });
 
-  const onSubmit = useMutation(LOGIN_MUTATION, {
-    update: (proxy, mutationResult) => {
-      const { user, token } = mutationResult.data.login;
-      setUser({
-        name: user.name,
-        email: user.email,
-        token: token,
-      });
-    },
-    variables: {
-      email: formState.values.email,
-      password: formState.values.password,
-    },
-  });
+  const handleLogin = useMutation(LOGIN_MUTATION);
+
+  const onSubmit = () => {
+    setLoading(true);
+    handleLogin({
+      update: (proxy, mutationResult) => {
+        const { user, token } = mutationResult.data.login;
+        setUser({
+          name: user.name,
+          email: user.email,
+          token: token,
+        });
+      },
+      variables: {
+        email: formState.values.email,
+        password: formState.values.password,
+      },
+    });
+  };
+
   return (
     <Grid textAlign="center" style={{ height: '60vh' }} verticalAlign="middle">
       <Grid.Column style={{ maxWidth: 450 }}>
@@ -42,27 +50,32 @@ const LoginForm = () => {
           Super Novel Admin
         </Header>
         <Form size="large">
-          <Segment stacked>
-            <input
-              name="email"
-              placeholder="email@example.com"
-              {...email('email')}
-              required
-              style={{ marginBottom: 20 }}
-            />
-            <input
-              name="password"
-              type="password"
-              placeholder="password"
-              {...password('password')}
-              style={{ marginBottom: 20 }}
-            />
+          {loading ? (
+            <div>loading...</div>
+          ) : (
+            <Segment stacked>
+              <input
+                name="email"
+                placeholder="email@example.com"
+                {...email('email')}
+                required
+                style={{ marginBottom: 20 }}
+              />
+              <input
+                name="password"
+                type="password"
+                placeholder="password"
+                {...password('password')}
+                style={{ marginBottom: 20 }}
+              />
 
-            <Button color="teal" fluid size="large" onClick={onSubmit}>
-              Login
-            </Button>
-          </Segment>
+              <Button color="teal" fluid size="large" onClick={onSubmit}>
+                Login
+              </Button>
+            </Segment>
+          )}
         </Form>
+        {error && <Message>Usuário ou senha inválidos</Message>}
         {/* <Message>
           New to us? <Link to="/register">Sign Up</Link>
         </Message> */}

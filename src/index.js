@@ -2,7 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { ApolloClient } from 'apollo-client';
 import { HttpLink } from 'apollo-link-http';
+import { RetryLink } from 'apollo-link-retry';
 import { ApolloProvider } from 'react-apollo';
+import { ApolloLink } from 'apollo-link';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { ApolloProvider as ApolloHooksProvider } from 'react-apollo-hooks';
 import { App } from './App';
@@ -11,19 +13,33 @@ import * as serviceWorker from './serviceWorker';
 
 import 'semantic-ui-css/semantic.min.css';
 
-const client = new ApolloClient({
-  cache: new InMemoryCache(),
-  link: new HttpLink({
-    uri: 'https://graphql-supernovel.herokuapp.com/graphql',
-  }),
+const retryIf = (error) => {
+  const doNotRetryCodes = [500, 400];
+  return !!error && !doNotRetryCodes.includes(error.statusCode);
+};
+
+const retry = new RetryLink({
+  delay: {
+    initial: 100,
+    max: 4000,
+    jitter: true,
+  },
+  attempts: {
+    max: 5,
+    retryIf,
+  },
 });
 
-// const client = new ApolloClient({
-//   cache: new InMemoryCache(),
-//   link: new HttpLink({
-//     uri: 'http://localhost:4000/graphql',
-//   }),
-// });
+const http = new HttpLink({
+  uri: 'https://graphql-supernovel.herokuapp.com/graphql',
+});
+
+const links = ApolloLink.from([http, retry]);
+
+const client = new ApolloClient({
+  cache: new InMemoryCache(),
+  link: links,
+});
 
 ReactDOM.render(
   <ApolloProvider client={client}>

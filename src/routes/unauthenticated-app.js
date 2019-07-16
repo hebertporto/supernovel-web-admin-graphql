@@ -1,9 +1,9 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { Container, Menu } from 'semantic-ui-react';
 
 import Login from '../screens/Login';
-import Register from '../screens/Register';
+// import Register from '../screens/Register';
 
 function AuthenticatedApp() {
   return (
