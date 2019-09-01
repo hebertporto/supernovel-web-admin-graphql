@@ -35,6 +35,15 @@ export const CRAWLER_CHAPTER_MUTATION = gql`
   }
 `;
 
+export const CRAWLER_NOVEL_CHAPTERS_MUTATION = gql`
+  mutation CRAWLER_NOVEL_CHAPTERS_MUTATION($url: String!) {
+    crawledNovelChapters(url: $url) {
+      description
+      link
+    }
+  }
+`;
+
 export const CREATE_CHAPTER_MUTATION = gql`
   mutation CREATE_CHAPTER_MUTATION(
     $number: String!

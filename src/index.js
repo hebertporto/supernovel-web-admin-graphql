@@ -30,11 +30,12 @@ const retry = new RetryLink({
   },
 });
 
-const http = new HttpLink({
-  uri: 'https://graphql-supernovel.herokuapp.com/graphql',
-});
+const uri = 'https://graphql-supernovel.herokuapp.com/graphql';
+// const uri = 'http://localhost:4000/graphql';
 
-const links = ApolloLink.from([http, retry]);
+const http = new HttpLink({ uri });
+
+const links = ApolloLink.from([retry, http]);
 
 const client = new ApolloClient({
   cache: new InMemoryCache(),

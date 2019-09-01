@@ -7,6 +7,7 @@ import { useQuery, useMutation } from 'react-apollo-hooks';
 import { NOVEL_INFO_QUERY } from '../graphql/Query';
 import { ChapterForm } from './components/ChapterForm';
 import { get } from 'lodash';
+import { ListLink } from './components/ListLink';
 
 const CreateChapter = (props) => {
   const [showLoadingUrl, setLoadingUrl] = useState(false);
@@ -24,14 +25,15 @@ const CreateChapter = (props) => {
       formState.setField('url', '');
       setLoadingUrl(false);
     },
-    variables: {
-      url: formState.values.url,
-    },
   });
 
-  const handleUrl = () => {
+  const handleUrl = (url) => {
     setLoadingUrl(true);
-    onSubmitUrl();
+    onSubmitUrl({
+      variables: {
+        url,
+      },
+    });
   };
 
   const novelName = get(data, 'novel.name', '');
@@ -59,7 +61,7 @@ const CreateChapter = (props) => {
                 color="green"
                 fluid
                 size="large"
-                onClick={handleUrl}
+                onClick={() => handleUrl(formState.values.url)}
                 disabled={showLoadingUrl || !formState.values.url}
               >
                 PESQUISAR
@@ -95,8 +97,11 @@ const CreateChapter = (props) => {
       </Grid>
 
       <Grid>
-        <Grid.Column width={9}>
+        <Grid.Column width={8}>
           <ChapterForm formData={formData} novelId={id} />
+        </Grid.Column>
+        <Grid.Column width={8}>
+          <ListLink loadChapter={handleUrl} chapterNumer={chapterNumer} />
         </Grid.Column>
       </Grid>
     </React.Fragment>
