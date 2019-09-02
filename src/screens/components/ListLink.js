@@ -21,7 +21,7 @@ function ListLink({ loadChapter, chapterNumer }) {
   const onSubmitUrl = useMutation(CRAWLER_NOVEL_CHAPTERS_MUTATION, {
     update: (proxy, mutationResult) => {
       const indice = parseInt(chapterNumer, 10);
-      const remove = indice > 0 ? indice - 2 : 0;
+      const remove = indice > 0 ? indice : 0;
       const chapters = mutationResult.data.crawledNovelChapters.slice(remove);
       setChaptersLinks(chapters);
       formState.setField('urlNovel', '');
