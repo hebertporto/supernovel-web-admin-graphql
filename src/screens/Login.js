@@ -19,8 +19,8 @@ const LoginForm = () => {
   const [error, seterror] = useState(false);
   const { setUser } = useAuth();
   const [formState, { email, password }] = useFormState({
-    email: 'hebertporto@gmail.com',
-    password: 'Senha0025',
+    email: '',
+    password: '',
   });
 
   const handleLogin = useMutation(LOGIN_MUTATION);
